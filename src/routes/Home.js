@@ -28,7 +28,7 @@ export default () => {
 
     
     //const [addCat, {data}] = useMutation(ADD_CAT);
-     const { loading, data } = useQuery(GET_TODO;
+     const { loading, data } = useQuery(GET_TODO);
 
     return (
         <div>
