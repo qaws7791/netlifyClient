@@ -31,7 +31,7 @@ export default () => {
 
     return (
         <div>
-            
+        {loading && <h1>loading...</h1>}
         <h1>name</h1>
         {data?.cats?.map( c => (
             <p> {c.name}</p>
