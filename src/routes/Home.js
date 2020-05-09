@@ -108,7 +108,9 @@ export default () => {
 }
 
 const Todoitem = ({name,id}) => {
-    const [deleteTodo] = useMutation(DELETE_TODO);
+    const [deleteTodo] = useMutation(DELETE_TODO,{
+        refetchQueries:['GET_TODO']
+    });
 
     return(
     <TodoitemContainer>
@@ -119,6 +121,7 @@ const Todoitem = ({name,id}) => {
                 variables:{id:id}
             });
         }}>
+            삭제
     </button>
     </TodoitemContainer>
     )
