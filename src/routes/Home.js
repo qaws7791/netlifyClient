@@ -67,8 +67,8 @@ const DELETE_TODO = gql`
 export default () => {
 
     
-    const { loading, data,refetch } = useQuery(GET_TODO, {
-        // pollInterval:500,
+    const { loading, data, refetch } = useQuery(GET_TODO, {
+         pollInterval:500,
     });
     const [name, setName] = useState('');
     const [addTodo] = useMutation(ADD_TODO);
