@@ -2,39 +2,92 @@ import React, { useState } from "react";
 import { gql } from "apollo-boost";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import styled from "styled-components";
+import "./Home.css";
+
 
 const Container = styled.div`
-    background-color: indianred;
+    background-color: #FC9D9A;
     width:400px;
     padding:50px;
+    font-family: 'Nanum Pen Script', cursive;
+    font-size:2em;
 
 `
 
 const Header = styled.div`
-    height:80px;
+    padding-bottom:50px;
 `
 
 const Title = styled.h1`
     color:#fff;
     font-size:3em;
+    line-height:1;
     text-align:right;
 `
 const SubTitle = styled.h1`
+
     color:#fff;
     text-align:right;
+
+    &::after {
+        content:'';
+        position: relative;
+        display:block;
+        top:20px;
+        width:100%;
+        height:1px;
+        background-color:#fff;
+    }
 `
 
 const TodoitemContainer = styled.li`
+    position: relative;
     list-style:none;
-    background-color:#ccc;
+    background-color:#F9CDAD;
     border-radius:2px;
     height:30px;
     margin-bottom:20px;
     padding:10px;
+    color: #fff;
+    
+`
+const Btn = styled.button`
+    display: block;
+    background-color:#FFAE7D;
+    position: absolute;
+    right:9px;
+    top: 9px;
+    border: none;
+    border-radius:4px;
+    padding:3px 7px;
+    color: #fff;
+    font-size:1.4rem;
+    font-family: 'Nanum Pen Script', cursive;
 `
 const Todolist = styled.ul`
     list-style:none;
 `
+
+const InputText = styled.input`
+    width: 100%;
+    border: none;
+    background-color:#ccc;
+    border-radius:2px;
+    color:#fff;
+    position: relative;
+    height:30px;
+    margin-bottom:20px;
+    padding:10px 0px;
+    font-size: 1em;
+    font-family: 'Nanum Pen Script', cursive;
+    text-indent:10px;
+    
+`
+
+const InputBox = styled.div`
+    position: relative;
+`
+
 
 const GET_TODO = gql`
  query {
@@ -45,6 +98,7 @@ const GET_TODO = gql`
      }
  }
 `;
+
 
 
 // ADD_Cat은 mutation이름이 아니라 그냥 wrapping하는것 
@@ -92,15 +146,17 @@ export default () => {
             ))}
         </Todolist>
             
-
-         <input value={name} onChange={onChangeName} />
-         <button onClick={e => {
+        <InputBox>
+        <InputText type={"text"} maxLength={10} value={name} onChange={onChangeName} />
+         <Btn onClick={e => {
             e.preventDefault();
             addTodo({
                 variables: {name: name}
             });
             refetch();
-        }}>ada</button>
+        }}>ADD</Btn>
+        </InputBox>
+         
         {/* <Createbtn></Createbtn> */}
         </Container>
         
@@ -115,14 +171,14 @@ const Todoitem = ({name,id}) => {
     return(
     <TodoitemContainer>
     <p>{name}</p>
-    <button onClick={e => {
+    <Btn onClick={e => {
             e.preventDefault();
             deleteTodo({
                 variables:{id:id}
             });
         }}>
-            삭제
-    </button>
+            DELETE
+    </Btn>
     </TodoitemContainer>
     )
 }
