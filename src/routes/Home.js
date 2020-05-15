@@ -6,11 +6,16 @@ import "./Home.css";
 
 
 const Container = styled.div`
+    
     background-color: #FC9D9A;
-    width:400px;
+    max-width:900px;
+    width:700px;
     padding:50px;
     font-family: 'Nanum Pen Script', cursive;
     font-size:2em;
+    @media (min-width:320px) and (max-width:480px) {
+        font-size:1.5em;
+    }
 
 `
 
@@ -45,17 +50,31 @@ const TodoitemContainer = styled.li`
     list-style:none;
     background-color:#F9CDAD;
     border-radius:2px;
-    height:30px;
+    height:50px;
     margin-bottom:20px;
     padding:10px;
     color: #fff;
     
 `
-const Btn = styled.button`
+const DelBtn = styled.button`
     display: block;
     background-color:#FFAE7D;
     position: absolute;
     right:9px;
+    top: 9px;
+    border: none;
+    border-radius:4px;
+    padding:3px 7px;
+    color: #fff;
+    font-size:1.4rem;
+    font-family: 'Nanum Pen Script', cursive;
+`
+
+const UpdateBtn = styled.button`
+    display: block;
+    background-color:#FFAE7D;
+    position: absolute;
+    right:100px;
     top: 9px;
     border: none;
     border-radius:4px;
@@ -75,7 +94,7 @@ const InputText = styled.input`
     border-radius:2px;
     color:#fff;
     position: relative;
-    height:30px;
+    height:50px;
     margin-bottom:20px;
     padding:10px 0px;
     font-size: 1em;
@@ -83,11 +102,24 @@ const InputText = styled.input`
     text-indent:10px;
     
 `
+const InputEdit = styled.input`
+    width:100%;
+    border: none;
+    background-color:#F9CDAD;
+    border-radius:2px;
+    color:#fff;
+    position: relative;
+    height:100%;
+    font-size: 1em;
+    font-family: 'Nanum Pen Script', cursive;
+    overflow: visible;
+`
 
 const InputBox = styled.div`
     position: relative;
 `
 
+//////////////////////////////styled-component//////////////////////////////////////
 
 const GET_TODO = gql`
  query {
@@ -101,7 +133,7 @@ const GET_TODO = gql`
 
 
 
-// ADD_Cat은 mutation이름이 아니라 그냥 wrapping하는것 
+// ADD_TODO은 mutation이름이 아니라 그냥 wrapping하는것 
 // 여기서 variables에서 받아오는 정보의 타입을 정의
 const ADD_TODO = gql`
     mutation ADD_TODO($name: String!){ 
@@ -118,6 +150,13 @@ const DELETE_TODO = gql`
     }
 `;
 
+const UPDATE_TODO = gql`
+    mutation UPDATE_TODO($id: ID!, $name: String!,$did:Boolean){
+        updateTodo(id:$id, name:$name, did:$did){
+            name
+        }
+    }
+`
 export default () => {
 
     
@@ -148,16 +187,16 @@ export default () => {
             
         <InputBox>
         <InputText type={"text"} maxLength={10} value={name} onChange={onChangeName} />
-         <Btn onClick={e => {
+         <DelBtn onClick={e => {
             e.preventDefault();
             addTodo({
                 variables: {name: name}
             });
             refetch();
-        }}>ADD</Btn>
+        }}>ADD</DelBtn>
         </InputBox>
          
-        {/* <Createbtn></Createbtn> */}
+        {/* <CreateDelbtn></CreateDelbtn> */}
         </Container>
         
     )
@@ -168,17 +207,49 @@ const Todoitem = ({name,id}) => {
         refetchQueries:['GET_TODO']
     });
 
+    const [updateTodo] = useMutation(UPDATE_TODO, {});
+    const [content, setName] = useState(name);
+    const onChangeName = e => {
+        setName(e.target.value);
+      };
+
+    const [editing,setEdit] = useState(false);
+
+
     return(
     <TodoitemContainer>
-    <p>{name}</p>
-    <Btn onClick={e => {
+        {
+            editing ? <InputEdit type="text" value={content} onChange={onChangeName} /> : <p>{content}</p>
+        }
+    
+    {
+        editing ?
+        <UpdateBtn onClick={e => {
+            e.preventDefault();
+            setEdit(false);
+            updateTodo({
+                variables: {id:id,name:content,did:false}
+            });
+        }}>
+            UPDATE
+        </UpdateBtn>
+        :
+        <UpdateBtn onClick={e => {
+            e.preventDefault();
+            setEdit(true);
+        }}>
+            EDIT
+        </UpdateBtn>
+    }
+
+    <DelBtn onClick={e => {
             e.preventDefault();
             deleteTodo({
                 variables:{id:id}
             });
         }}>
             DELETE
-    </Btn>
+    </DelBtn>
     </TodoitemContainer>
     )
 }
