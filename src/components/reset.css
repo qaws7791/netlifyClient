@@ -55,4 +55,40 @@ body {
 
 * {
 	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+#root {
+	width: 100%;
+}
+
+html {
+	font-size: 10px;
+}
+
+@media (min-width:320px) {
+	html{
+		font-size:15px;
+	}
+}
+@media (min-width:400px) {
+	html{
+	font-size:20px;
+	}
+}
+@media (min-width:500px) {
+	html{
+	font-size:25px;
+	}
+}
+@media (min-width:768px) {
+	html{
+	font-size:30px;
+	}
+}
+@media (min-width:1024px) {
+	html{
+	font-size:40px;
+}
 }

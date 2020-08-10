@@ -8,14 +8,13 @@ import "./Home.css";
 const Container = styled.div`
     
     background-color: #FC9D9A;
-    max-width:900px;
-    width:700px;
+    min-width:300px;
+    width:100%;
     padding:50px;
     font-family: 'Nanum Pen Script', cursive;
-    font-size:2em;
-    @media (min-width:320px) and (max-width:480px) {
-        font-size:1.5em;
-    }
+    font-size:1rem;
+    
+    
 
 `
 
@@ -25,7 +24,7 @@ const Header = styled.div`
 
 const Title = styled.h1`
     color:#fff;
-    font-size:3em;
+    font-size:3rem;
     line-height:1;
     text-align:right;
 `
@@ -50,39 +49,49 @@ const TodoitemContainer = styled.li`
     list-style:none;
     background-color:#F9CDAD;
     border-radius:2px;
-    height:50px;
     margin-bottom:20px;
     padding:10px;
     color: #fff;
     
 `
 const DelBtn = styled.button`
-    display: block;
+    display: inline-block;
     background-color:#FFAE7D;
-    position: absolute;
-    right:9px;
-    top: 9px;
+    
     border: none;
     border-radius:4px;
     padding:3px 7px;
     color: #fff;
-    font-size:1.4rem;
+    font-size:1.0rem;
     font-family: 'Nanum Pen Script', cursive;
 `
 
 const UpdateBtn = styled.button`
-    display: block;
+    display: inline-block;
     background-color:#FFAE7D;
-    position: absolute;
-    right:100px;
-    top: 9px;
+    margin-right:10px;
     border: none;
     border-radius:4px;
     padding:3px 7px;
     color: #fff;
-    font-size:1.4rem;
+    font-size:1.0rem;
     font-family: 'Nanum Pen Script', cursive;
 `
+const AddBtn = styled.button`
+display: inline-block;
+position: absolute;
+right:0;
+top:8px;
+background-color:#FFAE7D;
+margin-right:10px;
+border: none;
+border-radius:4px;
+padding:3px 7px;
+color: #fff;
+font-size:1.0rem;
+font-family: 'Nanum Pen Script', cursive;
+`
+
 const Todolist = styled.ul`
     list-style:none;
 `
@@ -97,7 +106,7 @@ const InputText = styled.input`
     height:50px;
     margin-bottom:20px;
     padding:10px 0px;
-    font-size: 1em;
+    font-size: 1rem;
     font-family: 'Nanum Pen Script', cursive;
     text-indent:10px;
     
@@ -110,7 +119,7 @@ const InputEdit = styled.input`
     color:#fff;
     position: relative;
     height:100%;
-    font-size: 1em;
+    font-size: 1rem;
     font-family: 'Nanum Pen Script', cursive;
     overflow: visible;
 `
@@ -119,6 +128,17 @@ const InputBox = styled.div`
     position: relative;
 `
 
+const BtnBox = styled.div`
+    display: inline-block;
+    position: relative;
+    text-align:right;
+    top:8px;
+    right:10px;
+`
+
+const Content = styled.p`
+    display:inline-block;
+`
 //////////////////////////////styled-component//////////////////////////////////////
 
 const GET_TODO = gql`
@@ -157,9 +177,17 @@ const UPDATE_TODO = gql`
         }
     }
 `
+
+const ME = gql`
+    query ME{
+        me{
+            username
+        }
+    }
+`
 export default () => {
 
-    
+    const {_,username} = useQuery(ME,{});
     const { loading, data, refetch } = useQuery(GET_TODO, {
          pollInterval:500,
     });
@@ -172,7 +200,7 @@ export default () => {
     return (
         <Container>
         <Header>
-            <Title>Todo List</Title>
+            <Title> {username} Todo List</Title>
             <SubTitle>using merng</SubTitle>
         </Header>
         
@@ -187,13 +215,13 @@ export default () => {
             
         <InputBox>
         <InputText type={"text"} maxLength={10} value={name} onChange={onChangeName} />
-         <DelBtn onClick={e => {
+         <AddBtn onClick={e => {
             e.preventDefault();
             addTodo({
                 variables: {name: name}
             });
             refetch();
-        }}>ADD</DelBtn>
+        }}>ADD</AddBtn>
         </InputBox>
          
         {/* <CreateDelbtn></CreateDelbtn> */}
@@ -219,21 +247,27 @@ const Todoitem = ({name,id}) => {
     return(
     <TodoitemContainer>
         {
-            editing ? <InputEdit type="text" value={content} onChange={onChangeName} /> : <p>{content}</p>
+            editing ? <InputEdit type="text" value={content} onChange={onChangeName} /> : <Content>{content}</Content>
         }
-    
+    <BtnBox>
     {
         editing ?
         <UpdateBtn onClick={e => {
             e.preventDefault();
             setEdit(false);
-            updateTodo({
-                variables: {id:id,name:content,did:false}
-            });
+            if(name !== content){
+                updateTodo({
+                    variables: {id:id,name:content,did:false}
+                }).then(console.log("update!",content));
+                
+            }
+            
         }}>
             UPDATE
         </UpdateBtn>
+
         :
+
         <UpdateBtn onClick={e => {
             e.preventDefault();
             setEdit(true);
@@ -250,6 +284,8 @@ const Todoitem = ({name,id}) => {
         }}>
             DELETE
     </DelBtn>
+    </BtnBox>
+    
     </TodoitemContainer>
     )
 }
